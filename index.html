@@ -1,65 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>FlowCall AI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Vapi Widget Script -->
-  <script
-    src="https://unpkg.com/@vapi-ai/client-sdk-react/dist/embed/widget.umd.js"
-    async
-    type="text/javascript">
-  </script>
-
-  <style>
-    body {
-      margin: 0;
-      background: #05070d;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    /* Hide unwanted default labels */
-    vapi-widget::part(header-title),
-    vapi-widget::part(status-indicator),
-    vapi-widget::part(call-status) {
-      display: none !important;
-    }
-
-    /* Force dark clean look */
-    vapi-widget {
-      --vapi-background: #05070d;
-      --vapi-panel-radius: 22px;
-    }
-  </style>
+    <title>Your Website</title>
 </head>
-
 <body>
-
-  <!-- Vapi Voice Widget -->
-  <vapi-widget
-    public-key="ed5e6d9a-b4cd-4f28-a0ec-bf979bec4c7d"
-    assistant-id="51f265cf-5bc8-4648-bc17-1ea5c0061e31"
-    mode="voice"
-
-    theme="dark"
-    size="full"
-    radius="large"
-
-    main-label=""
-    empty-voice-message=""
-    start-button-text="Start"
-    end-button-text=""
-
-    button-base-color="#2b2f36"
-    button-accent-color="#ffffff"
-
-    accent-color="#22c55e"
-    base-color="#05070d"
-
-    show-transcript="false"
-  >
-  </vapi-widget>
-
+    <!-- Your website content -->
+    
+    <!-- Add Vapi Widget -->
+    <script src="https://unpkg.com/@vapi-ai/client-sdk-react/dist/embed/widget.umd.js" async type="text/javascript"></script>
+    
+    <vapi-widget
+      public-key="ed5e6d9a-b4cd-4f28-a0ec-bf979bec4c7d"
+      assistant-id="51f265cf-5bc8-4648-bc17-1ea5c0061e31"
+      mode="voice"
+      theme="dark"
+    ></vapi-widget>
 </body>
 </html>
