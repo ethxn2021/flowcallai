@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>FlowCall AI – Voice</title>
+  <title>FlowCall AI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Vapi Widget Script -->
@@ -15,111 +15,135 @@
   <style>
     body {
       margin: 0;
+      background: #0b0f1a;
       font-family: Inter, system-ui, -apple-system, sans-serif;
-      background: #0b1020;
-      height: 100vh;
     }
 
-    /* ===== CTA BUTTON ===== */
-    #flowcall-btn {
+    /* ===== Trigger Button ===== */
+    #flowcall-trigger {
       position: fixed;
-      bottom: 28px;
+      bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding: 16px 28px;
+      gap: 14px;
+      padding: 14px 28px;
       border-radius: 999px;
-      cursor: pointer;
-      z-index: 9999;
       background: linear-gradient(135deg, #22c55e, #3b82f6);
-      color: #fff;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+      z-index: 9999;
     }
 
-    #flowcall-btn:hover {
-      opacity: 0.95;
-    }
-
-    #flowcall-btn .mic {
-      width: 48px;
-      height: 48px;
+    #flowcall-trigger .icon {
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.25);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-size: 20px;
     }
 
-    #flowcall-btn .text {
-      line-height: 1.1;
+    #flowcall-trigger .text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
     }
 
-    #flowcall-btn .title {
+    #flowcall-trigger .title {
       font-weight: 600;
-      font-size: 16px;
+      font-size: 15px;
     }
 
-    #flowcall-btn .subtitle {
-      font-size: 13px;
+    #flowcall-trigger .subtitle {
+      font-size: 12px;
       opacity: 0.85;
     }
 
-    /* ===== WIDGET ===== */
-    vapi-widget {
+    /* ===== Widget Container ===== */
+    #flowcall-widget {
       position: fixed;
-      inset: 0;
-      z-index: 10000;
+      bottom: 24px;
+      right: 24px;
+      width: 420px;
+      height: 640px;
       display: none;
+      z-index: 10000;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
     }
 
-    vapi-widget.active {
-      display: block;
+    /* Hide Vapi default labels */
+    vapi-widget::part(header),
+    vapi-widget::part(title),
+    vapi-widget::part(subtitle) {
+      display: none !important;
+    }
+
+    /* ===== Force START button style ===== */
+    vapi-widget button {
+      background: #9ca3af !important; /* grey */
+      color: #ffffff !important;
+      border-radius: 999px !important;
+      font-weight: 600;
+    }
+
+    /* ===== Mobile ===== */
+    @media (max-width: 640px) {
+      #flowcall-widget {
+        width: 100%;
+        height: 100%;
+        bottom: 0;
+        right: 0;
+        border-radius: 0;
+      }
     }
   </style>
 </head>
-
 <body>
 
-  <!-- CTA BUTTON -->
-  <div id="flowcall-btn">
-    <div class="mic">🎤</div>
+  <!-- Trigger Button -->
+  <div id="flowcall-trigger">
+    <div class="icon">🎤</div>
     <div class="text">
       <div class="title">Click to Speak to FlowCall</div>
       <div class="subtitle">Experience Live Voice AI</div>
     </div>
   </div>
 
-  <!-- VAPI VOICE WIDGET -->
-  <vapi-widget
-    id="vapiWidget"
-    public-key="ed5e6d9a-b4cd-4f28-a0ec-bf979bec4c7d"
-    assistant-id="51f265cf-5bc8-4648-bc17-1ea5c0061e31"
-    mode="voice"
-    theme="dark"
-    size="full"
-    radius="large"
-    base-color="#0b1020"
-    accent-color="#22c55e"
-    button-base-color="#0b1020"
-    button-accent-color="#22c55e"
-  ></vapi-widget>
+  <!-- Widget -->
+  <div id="flowcall-widget">
+    <vapi-widget
+      public-key="ed5e6d9a-b4cd-4f28-a0ec-bf979bec4c7d"
+      assistant-id="51f265cf-5bc8-4648-bc17-1ea5c0061e31"
+      mode="voice"
+      theme="dark"
+      main-label=""
+      start-button-text="Start"
+      end-button-text="End"
+      empty-voice-message="">
+    </vapi-widget>
+  </div>
 
   <script>
-    const btn = document.getElementById("flowcall-btn");
-    const widget = document.getElementById("vapiWidget");
+    const trigger = document.getElementById("flowcall-trigger");
+    const widget = document.getElementById("flowcall-widget");
 
-    btn.addEventListener("click", () => {
-      btn.style.display = "none";
-      widget.classList.add("active");
+    trigger.addEventListener("click", () => {
+      trigger.style.display = "none";
+      widget.style.display = "block";
     });
 
-    widget.addEventListener("call-end", () => {
-      widget.classList.remove("active");
-      btn.style.display = "flex";
-    });
+    document.querySelector("vapi-widget")
+      .addEventListener("call-end", () => {
+        widget.style.display = "none";
+        trigger.style.display = "flex";
+      });
   </script>
 
 </body>
