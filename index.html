@@ -1,65 +1,375 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>FlowCall AI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Vapi Widget Script -->
-  <script
-    src="https://unpkg.com/@vapi-ai/client-sdk-react/dist/embed/widget.umd.js"
-    async
-    type="text/javascript">
-  </script>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vapi Voice Widget - Reyna</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/vapi.js"></script>
   <style>
-    body {
+    * {
       margin: 0;
-      background: #05070d;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    /* Hide unwanted default labels */
-    vapi-widget::part(header-title),
-    vapi-widget::part(status-indicator),
-    vapi-widget::part(call-status) {
-      display: none !important;
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
     }
 
-    /* Force dark clean look */
+    .widget-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* Custom styling for Vapi widget */
     vapi-widget {
-      --vapi-background: #05070d;
-      --vapi-panel-radius: 22px;
+      --vapi-button-background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      --vapi-button-hover-background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+      --vapi-accent-color: #10b981;
+      --vapi-primary-color: #3b82f6;
+    }
+
+    /* Hide default Vapi widget and create custom UI */
+    vapi-widget {
+      display: none;
+    }
+
+    .custom-widget {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .voice-button {
+      position: relative;
+      width: 320px;
+      height: 100px;
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+      overflow: hidden;
+    }
+
+    .voice-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(16, 185, 129, 0.4);
+    }
+
+    .voice-button:active {
+      transform: translateY(0);
+    }
+
+    .voice-button.listening {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
+      box-shadow: 0 0 60px rgba(16, 185, 129, 0.5);
+    }
+
+    .mic-icon {
+      width: 48px;
+      height: 48px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .mic-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: #3b82f6;
+    }
+
+    .listening .mic-icon {
+      display: none;
+    }
+
+    .button-text {
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .listening .button-text {
+      display: none;
+    }
+
+    .button-subtext {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+
+    .listening .button-subtext {
+      display: none;
+    }
+
+    /* Listening sphere animation */
+    .sphere {
+      display: none;
+      position: absolute;
+      width: 240px;
+      height: 240px;
+    }
+
+    .listening .sphere {
+      display: block;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .sphere-dot {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #10b981;
+      border-radius: 50%;
+      opacity: 0;
+      animation: dotPulse 3s ease-in-out infinite;
+    }
+
+    .listening-status {
+      display: none;
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #10b981;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .listening .listening-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .listening-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      animation: blink 1.5s ease-in-out infinite;
+    }
+
+    .close-button {
+      display: none;
+      position: absolute;
+      bottom: 30px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .listening .close-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .close-button::before,
+    .close-button::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 2px;
+      background: white;
+    }
+
+    .close-button::before {
+      transform: rotate(45deg);
+    }
+
+    .close-button::after {
+      transform: rotate(-45deg);
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+      }
+    }
+
+    @keyframes dotPulse {
+      0% {
+        opacity: 0;
+        transform: scale(0);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0);
+      }
+    }
+
+    @keyframes blink {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.3;
+      }
     }
   </style>
 </head>
-
 <body>
+  <div class="widget-container">
+    <!-- Vapi Widget (hidden, used for functionality) -->
+    <vapi-widget 
+      id="vapiWidget"
+      public-key="ed5e6d9a-b4cd-4f28-a0ec-bf979bec4c7d" 
+      assistant-id="51f265cf-5bc8-4648-bc17-1ea5c0061e31" 
+      mode="voice">
+    </vapi-widget>
 
-  <!-- Vapi Voice Widget -->
-  <vapi-widget
-    public-key="ed5e6d9a-b4cd-4f28-a0ec-bf979bec4c7d"
-    assistant-id="51f265cf-5bc8-4648-bc17-1ea5c0061e31"
-    mode="voice"
+    <!-- Custom UI -->
+    <div class="custom-widget">
+      <button class="voice-button" id="voiceButton">
+        <div class="mic-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+          </svg>
+        </div>
+        <div class="button-text">Click to Speak to Reyna</div>
+        <div class="button-subtext">Experience Live Voice AI</div>
+        
+        <div class="listening-status">
+          <div class="listening-dot"></div>
+          LISTENING...
+        </div>
+        
+        <div class="sphere" id="sphere"></div>
+        
+        <div class="close-button" id="closeButton"></div>
+      </button>
+    </div>
+  </div>
 
-    theme="dark"
-    size="full"
-    radius="large"
+  <script>
+    const voiceButton = document.getElementById('voiceButton');
+    const closeButton = document.getElementById('closeButton');
+    const vapiWidget = document.getElementById('vapiWidget');
+    const sphere = document.getElementById('sphere');
+    
+    let isListening = false;
 
-    main-label=""
-    empty-voice-message=""
-    start-button-text="Start"
-    end-button-text=""
+    // Create sphere dots
+    function createSphereDots() {
+      sphere.innerHTML = '';
+      const numDots = 400;
+      const radius = 120;
 
-    button-base-color="#2b2f36"
-    button-accent-color="#ffffff"
+      for (let i = 0; i < numDots; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'sphere-dot';
+        
+        // Distribute dots in a sphere pattern
+        const phi = Math.acos(-1 + (2 * i) / numDots);
+        const theta = Math.sqrt(numDots * Math.PI) * phi;
+        
+        const x = radius * Math.cos(theta) * Math.sin(phi);
+        const y = radius * Math.sin(theta) * Math.sin(phi);
+        
+        dot.style.left = `${120 + x}px`;
+        dot.style.top = `${120 + y}px`;
+        dot.style.animationDelay = `${Math.random() * 3}s`;
+        
+        sphere.appendChild(dot);
+      }
+    }
 
-    accent-color="#22c55e"
-    base-color="#05070d"
+    createSphereDots();
 
-    show-transcript="false"
-  >
-  </vapi-widget>
+    // Handle voice button click
+    voiceButton.addEventListener('click', () => {
+      if (!isListening) {
+        startCall();
+      }
+    });
 
+    // Handle close button click
+    closeButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      endCall();
+    });
+
+    // Listen to Vapi events
+    vapiWidget.addEventListener('call-start', () => {
+      console.log('Call started');
+      isListening = true;
+      voiceButton.classList.add('listening');
+    });
+
+    vapiWidget.addEventListener('call-end', () => {
+      console.log('Call ended');
+      isListening = false;
+      voiceButton.classList.remove('listening');
+    });
+
+    vapiWidget.addEventListener('error', (event) => {
+      console.error('Widget error:', event.detail);
+      isListening = false;
+      voiceButton.classList.remove('listening');
+      
+      if (event.detail?.message?.includes('microphone')) {
+        alert('Please allow microphone access to use voice features.');
+      } else {
+        alert('Something went wrong. Please try again.');
+      }
+    });
+
+    function startCall() {
+      // Trigger the Vapi widget programmatically
+      vapiWidget.click();
+    }
+
+    function endCall() {
+      // You may need to access Vapi SDK methods to end the call
+      // This depends on the Vapi SDK implementation
+      vapiWidget.dispatchEvent(new CustomEvent('end-call'));
+    }
+  </script>
 </body>
 </html>
