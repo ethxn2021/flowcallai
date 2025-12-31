@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FlowCall AI – Voice</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Vapi Widget Script -->
+  <script
+    src="https://unpkg.com/@vapi-ai/client-sdk-react/dist/embed/widget.umd.js"
+    async
+    type="text/javascript">
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      background: #0b1020;
+      height: 100vh;
+    }
+
+    /* ===== CTA BUTTON ===== */
+    #flowcall-btn {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 28px;
+      border-radius: 999px;
+      cursor: pointer;
+      z-index: 9999;
+      background: linear-gradient(135deg, #22c55e, #3b82f6);
+      color: #fff;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    #flowcall-btn:hover {
+      opacity: 0.95;
+    }
+
+    #flowcall-btn .mic {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    #flowcall-btn .text {
+      line-height: 1.1;
+    }
+
+    #flowcall-btn .title {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    #flowcall-btn .subtitle {
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    /* ===== WIDGET ===== */
+    vapi-widget {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+    }
+
+    vapi-widget.active {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- CTA BUTTON -->
+  <div id="flowcall-btn">
+    <div class="mic">🎤</div>
+    <div class="text">
+      <div class="title">Click to Speak to FlowCall</div>
+      <div class="subtitle">Experience Live Voice AI</div>
+    </div>
+  </div>
+
+  <!-- VAPI VOICE WIDGET -->
+  <vapi-widget
+    id="vapiWidget"
+    public-key="ed5e6d9a-b4cd-4f28-a0ec-bf979bec4c7d"
+    assistant-id="51f265cf-5bc8-4648-bc17-1ea5c0061e31"
+    mode="voice"
+    theme="dark"
+    size="full"
+    radius="large"
+    base-color="#0b1020"
+    accent-color="#22c55e"
+    button-base-color="#0b1020"
+    button-accent-color="#22c55e"
+  ></vapi-widget>
+
+  <script>
+    const btn = document.getElementById("flowcall-btn");
+    const widget = document.getElementById("vapiWidget");
+
+    btn.addEventListener("click", () => {
+      btn.style.display = "none";
+      widget.classList.add("active");
+    });
+
+    widget.addEventListener("call-end", () => {
+      widget.classList.remove("active");
+      btn.style.display = "flex";
+    });
+  </script>
+
+</body>
+</html>
