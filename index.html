@@ -15,136 +15,51 @@
   <style>
     body {
       margin: 0;
-      background: #0b0f1a;
-      font-family: Inter, system-ui, -apple-system, sans-serif;
+      background: #05070d;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    /* ===== Trigger Button ===== */
-    #flowcall-trigger {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 28px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #22c55e, #3b82f6);
-      color: #ffffff;
-      cursor: pointer;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.45);
-      z-index: 9999;
-    }
-
-    #flowcall-trigger .icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-
-    #flowcall-trigger .text {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.15;
-    }
-
-    #flowcall-trigger .title {
-      font-weight: 600;
-      font-size: 15px;
-    }
-
-    #flowcall-trigger .subtitle {
-      font-size: 12px;
-      opacity: 0.85;
-    }
-
-    /* ===== Widget Container ===== */
-    #flowcall-widget {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 420px;
-      height: 640px;
-      display: none;
-      z-index: 10000;
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
-    }
-
-    /* Hide Vapi default labels */
-    vapi-widget::part(header),
-    vapi-widget::part(title),
-    vapi-widget::part(subtitle) {
+    /* Hide unwanted default labels */
+    vapi-widget::part(header-title),
+    vapi-widget::part(status-indicator),
+    vapi-widget::part(call-status) {
       display: none !important;
     }
 
-    /* ===== Force START button style ===== */
-    vapi-widget button {
-      background: #9ca3af !important; /* grey */
-      color: #ffffff !important;
-      border-radius: 999px !important;
-      font-weight: 600;
-    }
-
-    /* ===== Mobile ===== */
-    @media (max-width: 640px) {
-      #flowcall-widget {
-        width: 100%;
-        height: 100%;
-        bottom: 0;
-        right: 0;
-        border-radius: 0;
-      }
+    /* Force dark clean look */
+    vapi-widget {
+      --vapi-background: #05070d;
+      --vapi-panel-radius: 22px;
     }
   </style>
 </head>
+
 <body>
 
-  <!-- Trigger Button -->
-  <div id="flowcall-trigger">
-    <div class="icon">🎤</div>
-    <div class="text">
-      <div class="title">Click to Speak to FlowCall</div>
-      <div class="subtitle">Experience Live Voice AI</div>
-    </div>
-  </div>
+  <!-- Vapi Voice Widget -->
+  <vapi-widget
+    public-key="ed5e6d9a-b4cd-4f28-a0ec-bf979bec4c7d"
+    assistant-id="51f265cf-5bc8-4648-bc17-1ea5c0061e31"
+    mode="voice"
 
-  <!-- Widget -->
-  <div id="flowcall-widget">
-    <vapi-widget
-      public-key="ed5e6d9a-b4cd-4f28-a0ec-bf979bec4c7d"
-      assistant-id="51f265cf-5bc8-4648-bc17-1ea5c0061e31"
-      mode="voice"
-      theme="dark"
-      main-label=""
-      start-button-text="Start"
-      end-button-text="End"
-      empty-voice-message="">
-    </vapi-widget>
-  </div>
+    theme="dark"
+    size="full"
+    radius="large"
 
-  <script>
-    const trigger = document.getElementById("flowcall-trigger");
-    const widget = document.getElementById("flowcall-widget");
+    main-label=""
+    empty-voice-message=""
+    start-button-text="Start"
+    end-button-text=""
 
-    trigger.addEventListener("click", () => {
-      trigger.style.display = "none";
-      widget.style.display = "block";
-    });
+    button-base-color="#2b2f36"
+    button-accent-color="#ffffff"
 
-    document.querySelector("vapi-widget")
-      .addEventListener("call-end", () => {
-        widget.style.display = "none";
-        trigger.style.display = "flex";
-      });
-  </script>
+    accent-color="#22c55e"
+    base-color="#05070d"
+
+    show-transcript="false"
+  >
+  </vapi-widget>
 
 </body>
 </html>
